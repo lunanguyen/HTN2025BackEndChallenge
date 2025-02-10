@@ -82,6 +82,11 @@ To create the database and tables, follow these steps:
 ## API Endpoints
 
 ### 1. User Information Endpoint
+This endpoint return a list of all the user data from the database in a JSON format.
+#### Example:
+- `GET /users`
+
+### 2. User Information Endpoint
 
 This endpoint retrieves user information for a specific user based on their **user_id** or **badge_code**, as both are unique identifiers.
 
@@ -91,7 +96,7 @@ This endpoint retrieves user information for a specific user based on their **us
 
 These endpoints return user data along with their scan activity records, including the activity name, category, and scan timestamp.
 
-### 2. Updating User Data Endpoint
+### 3. Updating User Data Endpoint
 
 This endpoint allows for updating a user's data with the ability to update a subset of the available fields (name, email, phone, badge_code). Scans cannot be updated.
 
@@ -102,7 +107,7 @@ Edge cases handled:
 - **No valid fields**: If no valid fields (e.g., name, email) are provided for the update, a `400 Bad Request` response is returned.
 - **Non-existent user**: If the user with the specified ID is not found, a `404 Not Found` response is returned.
 
-### 3. Add Scan Endpoint
+### 4. Add Scan Endpoint
 
 This endpoint adds a scan for a user into an activity. It accepts a `badge_code` to identify the user and details about the activity being scanned.
 
@@ -112,19 +117,22 @@ This endpoint adds a scan for a user into an activity. It accepts a `badge_code`
 Edge cases handled:
 - **Missing fields**: If required activity fields (activity_name or activity_category) are missing, a `400 Bad Request` is returned.
 
-### 4. Scan Data Endpoint
+### 5. Scan Data Endpoint
 
 This endpoint aggregates data about scan frequencies for various activities. It supports filtering by minimum/maximum scan frequency and activity category.
 
 #### Example:
-- `GET /scans`: Retrieves scan counts for each activity.
+- `GET /scans?min_frequency=5&activity_category=meal`: Retrieves scan counts for each activity.
 
 #### SQL query:
 This query is designed to group and count scans by activity. The result can be filtered based on frequency and category using optional query parameters: min_frequency, max_frequency, activity_category.
 
-### 5. Scan Count by Time Period
+### 6. Scan Count by Time Period
 
 This endpoint allows querying the scan counts for a specific activity within a given time period (by hour).
+
+#### Example:
+- `GET /scan_count_by_time_period?activity_name=friday_dinner&start_time=18:00&end_time=21:00`
 
 #### Example:
 ```python
