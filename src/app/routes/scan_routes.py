@@ -5,6 +5,15 @@ from app.services.scan_service import ScanService
 
 scan_bp = Blueprint("scan", __name__)
 
+"""
+Adds a scan for a user by badge code.
+Args:
+    badge_code (str): The badge code of the user scanning the activity.
+Returns:
+    jsonify: The response with scan details or error message.
+    - 200 OK with scan details if the scan was successfully created.
+    - 400 Bad Request if activity fields are missing from the request body.
+"""
 @scan_bp.route("/scan/<string:badge_code>", methods=["PUT"])
 def add_scan(badge_code):
     db: Session = get_db()
@@ -19,6 +28,17 @@ def add_scan(badge_code):
     
     return jsonify(response)
 
+"""
+Retrieves aggregated scan data with optional filters.
+Args:
+    None (query parameters are optional):
+    - min_frequency (int): Minimum number of scans per activity to filter.
+    - max_frequency (int): Maximum number of scans per activity to filter.
+    - activity_category (str): Filter by activity category.
+Returns:
+    jsonify: A list of aggregated scan data.
+    - 200 OK with aggregated scan counts for each activity.
+"""
 @scan_bp.route("/scans", methods=["GET"])
 def get_scan_aggregates():
     db: Session = get_db()
@@ -33,6 +53,18 @@ def get_scan_aggregates():
 
     return jsonify(results)
 
+"""
+Retrieves the scan count for a specific activity, grouped by time period.
+Args:
+    None (query parameters required):
+    - activity_name (str): The name of the activity.
+    - start_time (str): The start time in HH:MM format.
+    - end_time (str): The end time in HH:MM format.
+Returns:
+    jsonify: A list of scan counts grouped by hour for the specified activity.
+    - 200 OK with the time distribution if successful.
+    - 400 Bad Request if any required parameter is missing or time format is invalid.
+"""
 @scan_bp.route("/scan_count_by_time_period", methods=["GET"])
 def get_scan_count_by_time_period():
     db: Session = get_db()  
