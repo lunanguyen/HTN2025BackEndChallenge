@@ -81,7 +81,7 @@ To create the database and tables, follow these steps:
 
 ## API Endpoints
 
-### 1. User Information Endpoint
+### 1. All Users Endpoint
 This endpoint return a list of all the user data from the database in a JSON format.
 #### Example:
 - `GET /users`
