@@ -16,5 +16,7 @@ def create_app():
     app.register_blueprint(user_bp)
     from app.routes.scan_routes import scan_bp
     app.register_blueprint(scan_bp)
+    from app.routes.user_scan_routes import user_scan_bp
+    app.register_blueprint(user_scan_bp)
 
     return app
