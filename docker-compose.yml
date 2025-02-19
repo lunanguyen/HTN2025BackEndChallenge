@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  backend:
+    build: .
+    container_name: flask_app
+    working_dir: /app
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy 
+    environment:
+      - FLASK_ENV=development
+      - SECRET_KEY=supersecretkey
+      - DEBUG=True
+      - DATABASE_URL=mssql+pyodbc://sa:ABtombong0807!@db:1433/HTNBackEndChallenge?driver=ODBC+Driver+17+for+SQL+Server"
+
+  db:
+    image: "mcr.microsoft.com/mssql/server:2022-latest"
+    container_name: sql_server
+    ports:
+      - "1433:1433"
+    environment:
+      SA_PASSWORD: "ABtombong0807!"
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Express"
+    healthcheck:
+      test: [ "CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "ABtombong0807!", "-Q", "SELECT 1" ]
+      interval: 10s
+      retries: 5
+      start_period: 30s
