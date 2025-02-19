@@ -79,6 +79,21 @@ To create the database and tables, follow these steps:
    - It uses the SQLAlchemy ORM to map JSON data to Python objects.
    - For each entry, it inserts the user data and links it to the relevant activity and scan records.
 
+3. **Create UserScans Table**: This table records when a user scans another user's badge.
+
+   ```sql
+   -- Create UserScans Table
+   CREATE TABLE UserScans (
+       id INT IDENTITY(1,1) PRIMARY KEY,
+       scanner_id INT NOT NULL,
+       scanned_id INT NOT NULL,
+       scanned_at DATETIME2 DEFAULT GETDATE() NOT NULL,
+       FOREIGN KEY (scanner_id) REFERENCES Users(id) ON DELETE CASCADE,
+       FOREIGN KEY (scanned_id) REFERENCES Users(id) ON DELETE CASCADE
+   );
+   GO
+   ```
+
 ## API Endpoints
 
 ### 1. All Users Endpoint
@@ -153,3 +168,75 @@ def get_scan_count_by_time_period(db, activity_name, start_time, end_time):
 ```
 
 This query counts the number of scans for each activity within the specified time range (grouped by hour) and orders them accordingly.
+
+### 7. Badge Scanning Endpoints
+
+#### a) Scan a User’s Badge
+Records when a user scans another user's badge.
+
+- **Endpoint**: `POST /scan-badge`
+- **Request Body**:
+  ```json
+  {
+  "scanner_badge": "give-seven-food-trade",
+  "scanned_badge": "town-both-century-little"
+  }
+  ```
+- **Response**:
+  ```json
+  {
+    "scanned": {
+        "badge_code": "town-both-century-little",
+        "id": 43,
+        "name": "Angela Dennis"
+    },
+    "scanned_at": "2025-02-19T13:29:09.043333",
+    "scanner": {
+        "badge_code": "give-seven-food-trade",
+        "id": 41,
+        "name": "James Graves"
+    }
+  }
+  ```
+
+#### b) Get Users a Given User Has Scanned
+Retrieves a list of users that a given user has scanned.
+
+- **Endpoint**: `GET /scanned-users/<int:scanner_id>`
+- **Example**: `GET /scanned-users/give-seven-food-trade`
+- **Response**:
+  ```json
+  [
+    {
+        "badge_code": "town-both-century-little",
+        "id": 43,
+        "name": "Angela Dennis"
+    },
+    {
+        "badge_code": "laugh-resource-apply-staff",
+        "id": 45,
+        "name": "Amanda Hicks"
+    }
+  ]
+  ```
+
+#### c) Get Users Who Scanned a Given User
+Retrieves a list of users who have scanned the given user.
+
+- **Endpoint**: `GET /users-who-scanned/<int:scanned_id>`
+- **Example**: `GET /users-who-scanned/give-seven-food-trade`
+- **Response**:
+  ```json
+  [
+    {
+        "badge_code": "song-run-get-federal",
+        "id": 51,
+        "name": "Todd Buck"
+    },
+    {
+        "badge_code": "assume-issue-hand-others",
+        "id": 48,
+        "name": "Angela Dennis"
+    }
+  ]
+  ```
